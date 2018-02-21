@@ -46,7 +46,10 @@ class SourceQuery(object):
 
     def getInfo(self):
         self.connect()
-        self.sock.send(A2S_INFO)
+        try:
+            self.sock.send(A2S_INFO)
+        except Exception as e:
+            return False
         before = time.time()
         try:
             data = self.sock.recv(4096)
@@ -146,7 +149,10 @@ class SourceQuery(object):
     def getChallenge(self):
         if not self.sock:
             self.connect()
-        self.sock.send(A2S_PLAYERS + b'0xFFFFFFFF')
+        try:
+            self.sock.send(A2S_PLAYERS + b'0xFFFFFFFF')
+        except:
+            return False
         try:
             data = self.sock.recv(4096)
         except:
@@ -162,8 +168,10 @@ class SourceQuery(object):
             self.connect()
         if not self.challenge:
             self.getChallenge()
-
-        self.sock.send(A2S_PLAYERS + self.challenge)
+        try:
+            self.sock.send(A2S_PLAYERS + self.challenge)
+        except:
+            return False
         try:
             data = self.sock.recv(4096)
         except:
@@ -200,7 +208,10 @@ class SourceQuery(object):
         if not self.challenge:
             self.getChallenge()
 
-        self.sock.send(A2S_RULES + self.challenge)
+        try:
+            self.sock.send(A2S_RULES + self.challenge)
+        except:
+            return False
         try:
             data = self.sock.recv(4096)
             if data[0] == '\xFE':
@@ -287,8 +298,8 @@ if __name__ == '__main__':
 
     rules = query.getRules()
 
-    print "\n{0:d} Rules".format(len(rules))
-    print "------------------------------------"
+    print("\n{0:d} Rules".format(len(rules)))
+    print("------------------------------------")
     for rule_name, value in rules.items():
         print("{0:<5} {1}".format(rule_name, value))
     query.disconnect()
